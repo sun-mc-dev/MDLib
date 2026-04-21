@@ -7,7 +7,9 @@ public class PartialContext {
 
     private final Map<String, Object> values = new HashMap<>();
 
-    public <T> void put(String name, T value) { values.put(name, value); }
+    public <T> void put(String name, T value) {
+        values.put(name, value);
+    }
 
     @SuppressWarnings("unchecked")
     public <T> T get(String name, Class<T> type) {
@@ -17,6 +19,8 @@ public class PartialContext {
         return (T) v;
     }
 
-    public boolean has(String name) { return values.containsKey(name); }
+    public boolean has(String name) {
+        return values.containsKey(name);
+    }
 
 }

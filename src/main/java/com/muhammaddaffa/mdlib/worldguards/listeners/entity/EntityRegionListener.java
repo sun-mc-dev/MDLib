@@ -43,7 +43,7 @@ public class EntityRegionListener implements Listener {
             return;
 
         final WgEntity we = WgEntity.get(entity);
-        if(we != null) {
+        if (we != null) {
             we.updateRegions(MovementWay.SPAWN, entity.getLocation(), entity.getLocation());
         }
     }
@@ -52,7 +52,7 @@ public class EntityRegionListener implements Listener {
     private void onEntitySpawn(CreatureSpawnEvent event) {
         LivingEntity entity = event.getEntity();
         final WgEntity we = WgEntity.get(entity);
-        if(we != null) {
+        if (we != null) {
             we.updateRegions(MovementWay.SPAWN, entity.getLocation(), entity.getLocation());
         }
     }

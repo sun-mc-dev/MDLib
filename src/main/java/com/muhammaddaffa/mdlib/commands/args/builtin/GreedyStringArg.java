@@ -7,8 +7,15 @@ import org.bukkit.command.CommandSender;
 
 public final class GreedyStringArg implements ArgumentType<String> {
 
-    @Override public String id() { return "<text...>"; }
-    @Override public boolean greedy() { return true; }
+    @Override
+    public String id() {
+        return "<text...>";
+    }
+
+    @Override
+    public boolean greedy() {
+        return true;
+    }
 
     @Override
     public String parse(CommandSender s, TokenReader t) {

@@ -3,8 +3,6 @@ package com.muhammaddaffa.mdlib.worldguards.events;
 import com.muhammaddaffa.mdlib.worldguards.MovementWay;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerEvent;
 
 /**
  * event that is triggered after a player entered a WorldGuard region

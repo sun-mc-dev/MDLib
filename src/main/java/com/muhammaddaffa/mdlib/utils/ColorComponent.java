@@ -30,13 +30,14 @@ public class ColorComponent {
      * Converts a String to a Component with color codes and decorations
      * It also supports hex colors and URLs
      *
-     * @param message     The message to convert
+     * @param message The message to convert
      * @return The converted message
      */
     public static Component colorToComponent(String message, @Nullable PlaceholderComponent placeholders) {
         if (message == null) return Component.empty();
 
-        Component component = LEGACY.deserialize(message).decoration(TextDecoration.ITALIC, false);;
+        Component component = LEGACY.deserialize(message).decoration(TextDecoration.ITALIC, false);
+        ;
 
         if (placeholders != null) {
             component = placeholders.translate(component);

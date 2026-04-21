@@ -16,7 +16,7 @@ public class FoliaExecutor {
      * @return ScheduledTask
      *
      * <p><b>Example:</b></p>
-     *      * <pre>{@code
+     * * <pre>{@code
      *      * FoliaExecutor.runTask(task -> {
      *      *     // Your code here
      *      * });
@@ -30,7 +30,7 @@ public class FoliaExecutor {
      * Runs a task on the main server thread after a specified delay.
      *
      * @param runnable the task to run; it accepts a {@link ScheduledTask} as its parameter
-     * @param delay the delay before execution, in ticks
+     * @param delay    the delay before execution, in ticks
      * @return the {@link ScheduledTask} representing the scheduled task
      *
      * <p><b>Example:</b></p>
@@ -48,12 +48,12 @@ public class FoliaExecutor {
      * Run a task on the main thread after a delay and repeat it.
      *
      * @param runnable It needs to accept a {@link ScheduledTask} as a parameter.
-     * @param delay Delay in ticks.
-     * @param period Period in ticks.
+     * @param delay    Delay in ticks.
+     * @param period   Period in ticks.
      * @return ScheduledTask
      *
      * <p><b>Example:</b></p>
-     *      * <pre>{@code
+     * * <pre>{@code
      *      * FoliaExecutor.runTaskTimer(task -> {
      *      *     // Your code here
      *      * }, 20, 20);
@@ -70,7 +70,7 @@ public class FoliaExecutor {
      * @return ScheduledTask
      *
      * <p><b>Example:</b></p>
-     *      * <pre>{@code
+     * * <pre>{@code
      *      * FoliaExecutor.runTaskAsynchronously(task -> {
      *      *     // Your code here
      *      * });
@@ -84,12 +84,12 @@ public class FoliaExecutor {
      * Run a task asynchronously after a delay.
      *
      * @param runnable It needs to accept a {@link ScheduledTask} as a parameter.
-     * @param delay Delay in ticks.
+     * @param delay    Delay in ticks.
      * @param timeUnit Time unit.
      * @return ScheduledTask
      *
      * <p><b>Example:</b></p>
-     *      * <pre>{@code
+     * * <pre>{@code
      *      * FoliaExecutor.runTaskLaterAsynchronously(task -> {
      *      *     // Your code here
      *      * }, 20, TimeUnit.MILLISECONDS);
@@ -103,13 +103,13 @@ public class FoliaExecutor {
      * Run a task asynchronously after a delay and repeat it.
      *
      * @param runnable It needs to accept a {@link ScheduledTask} as a parameter.
-     * @param delay Delay in ticks.
-     * @param period Period in ticks.
+     * @param delay    Delay in ticks.
+     * @param period   Period in ticks.
      * @param timeUnit Time unit.
      * @return ScheduledTask
      *
      * <p><b>Example:</b></p>
-     *      * <pre>{@code
+     * * <pre>{@code
      *      * FoliaExecutor.runTaskTimerAsynchronously(task -> {
      *      *     // Your code here
      *      * }, 20, 20, TimeUnit.MILLISECONDS);

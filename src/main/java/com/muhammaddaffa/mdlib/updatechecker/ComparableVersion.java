@@ -29,6 +29,33 @@ class ComparableVersion implements Comparable<ComparableVersion> {
         this.parseVersion(version);
     }
 
+    private static Item parseItem(final boolean isDigit, String buf) {
+        if (!isDigit) {
+            return new StringItem(buf, false);
+        }
+        buf = stripLeadingZeroes(buf);
+        if (buf.length() <= 9) {
+            return new IntItem(buf);
+        }
+        if (buf.length() <= 18) {
+            return new LongItem(buf);
+        }
+        return new BigIntegerItem(buf);
+    }
+
+    private static String stripLeadingZeroes(final String buf) {
+        if (buf == null || buf.isEmpty()) {
+            return "0";
+        }
+        for (int i = 0; i < buf.length(); ++i) {
+            final char c = buf.charAt(i);
+            if (c != '0') {
+                return buf.substring(i);
+            }
+        }
+        return buf;
+    }
+
     public final void parseVersion(String version) {
         this.value = version;
         this.items = new ListItem();
@@ -81,33 +108,6 @@ class ComparableVersion implements Comparable<ComparableVersion> {
             list = (ListItem) stack.pop();
             list.normalize();
         }
-    }
-
-    private static Item parseItem(final boolean isDigit, String buf) {
-        if (!isDigit) {
-            return new StringItem(buf, false);
-        }
-        buf = stripLeadingZeroes(buf);
-        if (buf.length() <= 9) {
-            return new IntItem(buf);
-        }
-        if (buf.length() <= 18) {
-            return new LongItem(buf);
-        }
-        return new BigIntegerItem(buf);
-    }
-
-    private static String stripLeadingZeroes(final String buf) {
-        if (buf == null || buf.isEmpty()) {
-            return "0";
-        }
-        for (int i = 0; i < buf.length(); ++i) {
-            final char c = buf.charAt(i);
-            if (c != '0') {
-                return buf.substring(i);
-            }
-        }
-        return buf;
     }
 
     @Override
@@ -374,6 +374,11 @@ class ComparableVersion implements Comparable<ComparableVersion> {
             this.value = StringItem.ALIASES.getProperty(value, value);
         }
 
+        public static String comparableQualifier(final String qualifier) {
+            final int i = StringItem.QUALIFIERS.indexOf(qualifier);
+            return (i == -1) ? (StringItem.QUALIFIERS.size() + "-" + qualifier) : String.valueOf(i);
+        }
+
         @Override
         public int compareTo(final Item item) {
             if (item == null) {
@@ -403,11 +408,6 @@ class ComparableVersion implements Comparable<ComparableVersion> {
         @Override
         public boolean isNull() {
             return comparableQualifier(this.value).compareTo(StringItem.RELEASE_VERSION_INDEX) == 0;
-        }
-
-        public static String comparableQualifier(final String qualifier) {
-            final int i = StringItem.QUALIFIERS.indexOf(qualifier);
-            return (i == -1) ? (StringItem.QUALIFIERS.size() + "-" + qualifier) : String.valueOf(i);
         }
 
         @Override

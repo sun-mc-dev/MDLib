@@ -10,6 +10,10 @@ public abstract class CancellablePluginEvent extends Event implements Cancellabl
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
 
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
+
     @Override
     public boolean isCancelled() {
         return cancelled;
@@ -22,10 +26,6 @@ public abstract class CancellablePluginEvent extends Event implements Cancellabl
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        return HANDLERS;
-    }
-
-    public static HandlerList getHandlerList() {
         return HANDLERS;
     }
 }

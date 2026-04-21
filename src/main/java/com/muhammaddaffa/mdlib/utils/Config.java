@@ -21,44 +21,14 @@ import java.util.Map;
 public class Config {
 
     private static final Map<String, Config> configMap = new HashMap<>();
-
-    private static void registerConfig(Config config) {
-        configMap.put(config.getFile().getPath(), config);
-    }
-
-    public static void reload() {
-        for (Config config : configMap.values()) {
-            if (!config.isShouldReload()) continue;
-            config.reloadConfig();
-        }
-    }
-
-    public static void updateConfigs() {
-        for (Config config : configMap.values()) {
-            if (!config.isShouldUpdate()) {
-                continue;
-            }
-            // Get the config file
-            try {
-                ConfigUpdater.update(MDLib.instance(), config.getFile().getName(), config.getFile());
-            } catch(Exception ex) {
-                Logger.severe("Failed to update the " + config.getFile().getName());
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    // -----------------------------------------------------------
-
     private final File file;
-    private FileConfiguration config;
-
     private final String configName;
-    private boolean shouldReload;
-
-    private boolean shouldUpdate;
     private final List<String> ignored = new ArrayList<>();
 
+    // -----------------------------------------------------------
+    private FileConfiguration config;
+    private boolean shouldReload;
+    private boolean shouldUpdate;
     public Config(String configName, String directory, boolean shouldReload) {
         JavaPlugin plugin = MDLib.instance();
         this.configName = configName;
@@ -92,6 +62,32 @@ public class Config {
         this.config = YamlConfiguration.loadConfiguration(file);
         // Register the config
         Config.registerConfig(this);
+    }
+
+    private static void registerConfig(Config config) {
+        configMap.put(config.getFile().getPath(), config);
+    }
+
+    public static void reload() {
+        for (Config config : configMap.values()) {
+            if (!config.isShouldReload()) continue;
+            config.reloadConfig();
+        }
+    }
+
+    public static void updateConfigs() {
+        for (Config config : configMap.values()) {
+            if (!config.isShouldUpdate()) {
+                continue;
+            }
+            // Get the config file
+            try {
+                ConfigUpdater.update(MDLib.instance(), config.getFile().getName(), config.getFile());
+            } catch (Exception ex) {
+                Logger.severe("Failed to update the " + config.getFile().getName());
+                ex.printStackTrace();
+            }
+        }
     }
 
     public boolean isShouldUpdate() {

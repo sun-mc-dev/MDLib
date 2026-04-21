@@ -9,21 +9,21 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerBalanceChangeEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
-
-    public enum ChangeType {DEPOSIT, WITHDRAW, SET}
-
     private final OfflinePlayer player;
     private final double oldBalance;
-    private double newBalance;
     private final ChangeType changeType;
+    private double newBalance;
     private boolean cancelled;
-
     public PlayerBalanceChangeEvent(OfflinePlayer player, double oldBalance,
                                     double newBalance, ChangeType changeType) {
         this.player = player;
         this.oldBalance = oldBalance;
         this.newBalance = newBalance;
         this.changeType = changeType;
+    }
+
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
     }
 
     public OfflinePlayer getPlayer() {
@@ -65,7 +65,5 @@ public class PlayerBalanceChangeEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-    public static HandlerList getHandlerList() {
-        return HANDLERS;
-    }
+    public enum ChangeType {DEPOSIT, WITHDRAW, SET}
 }

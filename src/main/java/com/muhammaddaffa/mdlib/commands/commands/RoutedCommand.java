@@ -12,12 +12,200 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class RoutedCommand implements SimpleCommandSpec {
 
-    protected record Param(String name, ArgumentType<?> type, boolean optional, ArgSuggester suggester) {
+    private final String name;
+    private final String description;
+    private final String explicitUsage;
+    private final String permission;
+    private final CommandPlan rootPlan = new CommandPlan(null);
+    private final List<CommandPlan> subs = new ArrayList<>();
+    private final List<String> rootAliases = new ArrayList<>();
+    private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> pendingConfirm = new ConcurrentHashMap<>();
+    public RoutedCommand(String name) {
+        this(name, null);
+    }
+
+    public RoutedCommand(String name, String permission) {
+        this(name, "", "/" + name, permission);
+    }
+    protected RoutedCommand(String name, String description, String explicitUsage, String permission) {
+        this.name = name;
+        this.description = description != null ? description : "";
+        this.explicitUsage = explicitUsage;
+        this.permission = permission;
+    }
+
+    public RoutedCommand alias(List<String> names) {
+        rootAliases.addAll(names);
+        return this;
+    }
+
+    public RoutedCommand alias(String... names) {
+        rootAliases.addAll(Arrays.asList(names));
+        return this;
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Collections.unmodifiableList(rootAliases);
+    }
+
+    protected CommandPlan root() {
+        return rootPlan;
+    }
+
+    protected CommandPlan sub(String literal) {
+        CommandPlan p = new CommandPlan(literal);
+        subs.add(p);
+        return p;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public String description() {
+        return description;
+    }
+
+    @Override
+    public String permission() {
+        return permission;
+    }
+
+    @Override
+    public String usage() {
+        if (explicitUsage != null && !explicitUsage.isEmpty()) return explicitUsage;
+        if (rootPlan.isDefined()) return rootPlan.usageString(name);
+        if (!subs.isEmpty()) return subs.getFirst().usageString(name);
+        return "/" + name;
+    }
+
+    @Override
+    public void execute(CommandSender sender, String label, String[] raw) {
+        try {
+            if (raw.length == 0) {
+                if (rootPlan.isDefined()) {
+                    rootPlan.handle(sender, raw, permission, cooldowns, pendingConfirm);
+                    return;
+                }
+                onRoot(sender);
+                return;
+            }
+
+            String first = raw[0];
+
+            CommandPlan matched = null;
+            for (CommandPlan p : subs) {
+                if (p.matchesToken(first)) {
+                    matched = p;
+                    break;
+                }
+            }
+
+            if (matched != null) {
+                String[] rest = Arrays.copyOfRange(raw, 1, raw.length);
+                matched.handle(sender, rest, null, cooldowns, pendingConfirm);
+                return;
+            }
+
+            if (rootPlan.isDefined()) {
+                rootPlan.handle(sender, raw, permission, cooldowns, pendingConfirm);
+                return;
+            }
+            onUnknownSub(sender, raw[0]);
+
+        } catch (ArgParseException apx) {
+            sender.sendMessage("§c" + apx.getMessage());
+            sender.sendMessage("§7Usage: §f" + usage());
+        } catch (Throwable t) {
+            sender.sendMessage("§cAn internal error occurred. See console.");
+            t.printStackTrace();
+        }
+    }
+
+    protected boolean onRoot(CommandSender sender) {
+        List<String> visible = new ArrayList<>();
+        for (CommandPlan p : subs) {
+            String perm = p.permission();
+            if (perm == null || perm.isBlank() || sender.hasPermission(perm)) {
+                List<String> labels = p.labelsForTab();
+                String primary = labels.isEmpty() ? "" : labels.get(0);
+                List<String> rest = labels.size() > 1 ? labels.subList(1, labels.size()) : List.of();
+                if (rest.isEmpty()) visible.add(primary);
+                else visible.add(primary + " §8(" + String.join(", ", rest) + ")§7");
+            }
+        }
+        String list = visible.isEmpty() ? "-" : String.join("§7, §f", visible);
+        sender.sendMessage("§7Available: §f" + list);
+        sender.sendMessage("§7Usage: §f" + usage());
+        return true;
+    }
+
+    protected boolean onUnknownSub(@NotNull CommandSender sender, String token) {
+        sender.sendMessage("§cUnknown subcommand: §f" + token);
+        return onRoot(sender);
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String @NotNull [] raw) {
+        if (raw.length == 1) {
+            String prefix = raw[0] == null ? "" : raw[0];
+            List<String> candidates = new ArrayList<>();
+
+            if (rootPlan.isDefined()) {
+                String ph = rootPlan.firstParamPlaceholder();
+                if (ph != null) candidates.add(ph);
+            }
+
+            for (CommandPlan p : subs) {
+                String perm = p.permission();
+                if (perm == null || perm.isBlank() || sender.hasPermission(perm)) {
+                    var labels = p.labelsForTab();
+                    if (!labels.isEmpty()) candidates.add(labels.get(0));
+                }
+            }
+
+            List<String> out = new ArrayList<>(candidates.size());
+            StringUtil.copyPartialMatches(prefix, candidates, out);
+            return out;
+        }
+
+        if (raw.length == 0) {
+            List<String> first = new ArrayList<>();
+            String ph = rootPlan.isDefined() ? rootPlan.firstParamPlaceholder() : null;
+            if (ph != null) first.add(ph);
+            for (CommandPlan p : subs) {
+                var labels = p.labelsForTab();
+                if (!labels.isEmpty()) first.add(labels.getFirst());
+            }
+            return first;
+        }
+
+        CommandPlan matched = null;
+        for (CommandPlan p : subs) {
+            if (p.matchesToken(raw[0])) {
+                matched = p;
+                break;
+            }
+        }
+        if (matched != null) {
+            String[] rest = Arrays.copyOfRange(raw, 1, raw.length);
+            return matched.tab(sender, rest);
+        }
+
+        if (rootPlan.isDefined()) return rootPlan.tab(sender, raw);
+        return List.of();
     }
 
     @FunctionalInterface
     public interface Handler {
         void run(CommandSender sender, CommandContext ctx) throws Exception;
+    }
+
+    protected record Param(String name, ArgumentType<?> type, boolean optional, ArgSuggester suggester) {
     }
 
     public static final class CommandPlan {
@@ -280,197 +468,5 @@ public abstract class RoutedCommand implements SimpleCommandSpec {
             String name = p.name();
             return p.optional() ? "[" + name + "]" : "<" + name + ">";
         }
-    }
-
-    private final String name;
-    private final String description;
-    private final String explicitUsage;
-    private final String permission;
-
-    private final CommandPlan rootPlan = new CommandPlan(null);
-    private final List<CommandPlan> subs = new ArrayList<>();
-    private final List<String> rootAliases = new ArrayList<>();
-
-    private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
-    private final Map<UUID, Long> pendingConfirm = new ConcurrentHashMap<>();
-
-    public RoutedCommand(String name) {
-        this(name, null);
-    }
-
-    public RoutedCommand(String name, String permission) {
-        this(name, "", "/" + name, permission);
-    }
-
-    protected RoutedCommand(String name, String description, String explicitUsage, String permission) {
-        this.name = name;
-        this.description = description != null ? description : "";
-        this.explicitUsage = explicitUsage;
-        this.permission = permission;
-    }
-
-    public RoutedCommand alias(List<String> names) {
-        rootAliases.addAll(names);
-        return this;
-    }
-
-    public RoutedCommand alias(String... names) {
-        rootAliases.addAll(Arrays.asList(names));
-        return this;
-    }
-
-    @Override
-    public List<String> aliases() {
-        return Collections.unmodifiableList(rootAliases);
-    }
-
-    protected CommandPlan root() {
-        return rootPlan;
-    }
-
-    protected CommandPlan sub(String literal) {
-        CommandPlan p = new CommandPlan(literal);
-        subs.add(p);
-        return p;
-    }
-
-    @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public String description() {
-        return description;
-    }
-
-    @Override
-    public String permission() {
-        return permission;
-    }
-
-    @Override
-    public String usage() {
-        if (explicitUsage != null && !explicitUsage.isEmpty()) return explicitUsage;
-        if (rootPlan.isDefined()) return rootPlan.usageString(name);
-        if (!subs.isEmpty()) return subs.getFirst().usageString(name);
-        return "/" + name;
-    }
-
-    @Override
-    public void execute(CommandSender sender, String label, String[] raw) {
-        try {
-            if (raw.length == 0) {
-                if (rootPlan.isDefined()) {
-                    rootPlan.handle(sender, raw, permission, cooldowns, pendingConfirm);
-                    return;
-                }
-                onRoot(sender);
-                return;
-            }
-
-            String first = raw[0];
-
-            CommandPlan matched = null;
-            for (CommandPlan p : subs) {
-                if (p.matchesToken(first)) {
-                    matched = p;
-                    break;
-                }
-            }
-
-            if (matched != null) {
-                String[] rest = Arrays.copyOfRange(raw, 1, raw.length);
-                matched.handle(sender, rest, null, cooldowns, pendingConfirm);
-                return;
-            }
-
-            if (rootPlan.isDefined()) {
-                rootPlan.handle(sender, raw, permission, cooldowns, pendingConfirm);
-                return;
-            }
-            onUnknownSub(sender, raw[0]);
-
-        } catch (ArgParseException apx) {
-            sender.sendMessage("§c" + apx.getMessage());
-            sender.sendMessage("§7Usage: §f" + usage());
-        } catch (Throwable t) {
-            sender.sendMessage("§cAn internal error occurred. See console.");
-            t.printStackTrace();
-        }
-    }
-
-    protected boolean onRoot(CommandSender sender) {
-        List<String> visible = new ArrayList<>();
-        for (CommandPlan p : subs) {
-            String perm = p.permission();
-            if (perm == null || perm.isBlank() || sender.hasPermission(perm)) {
-                List<String> labels = p.labelsForTab();
-                String primary = labels.isEmpty() ? "" : labels.get(0);
-                List<String> rest = labels.size() > 1 ? labels.subList(1, labels.size()) : List.of();
-                if (rest.isEmpty()) visible.add(primary);
-                else visible.add(primary + " §8(" + String.join(", ", rest) + ")§7");
-            }
-        }
-        String list = visible.isEmpty() ? "-" : String.join("§7, §f", visible);
-        sender.sendMessage("§7Available: §f" + list);
-        sender.sendMessage("§7Usage: §f" + usage());
-        return true;
-    }
-
-    protected boolean onUnknownSub(@NotNull CommandSender sender, String token) {
-        sender.sendMessage("§cUnknown subcommand: §f" + token);
-        return onRoot(sender);
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String @NotNull [] raw) {
-        if (raw.length == 1) {
-            String prefix = raw[0] == null ? "" : raw[0];
-            List<String> candidates = new ArrayList<>();
-
-            if (rootPlan.isDefined()) {
-                String ph = rootPlan.firstParamPlaceholder();
-                if (ph != null) candidates.add(ph);
-            }
-
-            for (CommandPlan p : subs) {
-                String perm = p.permission();
-                if (perm == null || perm.isBlank() || sender.hasPermission(perm)) {
-                    var labels = p.labelsForTab();
-                    if (!labels.isEmpty()) candidates.add(labels.get(0));
-                }
-            }
-
-            List<String> out = new ArrayList<>(candidates.size());
-            StringUtil.copyPartialMatches(prefix, candidates, out);
-            return out;
-        }
-
-        if (raw.length == 0) {
-            List<String> first = new ArrayList<>();
-            String ph = rootPlan.isDefined() ? rootPlan.firstParamPlaceholder() : null;
-            if (ph != null) first.add(ph);
-            for (CommandPlan p : subs) {
-                var labels = p.labelsForTab();
-                if (!labels.isEmpty()) first.add(labels.getFirst());
-            }
-            return first;
-        }
-
-        CommandPlan matched = null;
-        for (CommandPlan p : subs) {
-            if (p.matchesToken(raw[0])) {
-                matched = p;
-                break;
-            }
-        }
-        if (matched != null) {
-            String[] rest = Arrays.copyOfRange(raw, 1, raw.length);
-            return matched.tab(sender, rest);
-        }
-
-        if (rootPlan.isDefined()) return rootPlan.tab(sender, raw);
-        return List.of();
     }
 }

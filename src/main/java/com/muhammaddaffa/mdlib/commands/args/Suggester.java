@@ -10,8 +10,6 @@ import java.util.function.Supplier;
 @FunctionalInterface
 public interface Suggester {
 
-    List<String> get(CommandSender sender, String prefix);
-
     static Suggester list(List<String> values) {
         return (sender, prefix) -> {
             String p = prefix == null ? "" : prefix.toLowerCase();
@@ -34,5 +32,7 @@ public interface Suggester {
     static Suggester dynamic(BiFunction<CommandSender, String, List<String>> fn) {
         return fn::apply; // full control
     }
+
+    List<String> get(CommandSender sender, String prefix);
 
 }

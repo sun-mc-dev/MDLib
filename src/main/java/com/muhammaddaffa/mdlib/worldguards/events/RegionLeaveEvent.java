@@ -3,9 +3,7 @@ package com.muhammaddaffa.mdlib.worldguards.events;
 import com.muhammaddaffa.mdlib.worldguards.MovementWay;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.player.PlayerEvent;
 
 /**
  * event that is triggered before a player leaves a WorldGuard region, can be cancelled sometimes
@@ -32,6 +30,16 @@ public class RegionLeaveEvent extends RegionEvent implements Cancellable {
     }
 
     /**
+     * retrieves whether this event will be cancelled/has been cancelled by any plugin
+     *
+     * @return true if this event will be cancelled and the player will be stopped from moving
+     */
+    @Override
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    /**
      * sets whether this event should be cancelled
      * when the event is cancelled the player will not be able to move out of the region
      *
@@ -45,17 +53,6 @@ public class RegionLeaveEvent extends RegionEvent implements Cancellable {
 
         this.cancelled = cancelled;
     }
-
-    /**
-     * retrieves whether this event will be cancelled/has been cancelled by any plugin
-     *
-     * @return true if this event will be cancelled and the player will be stopped from moving
-     */
-    @Override
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
 
     /**
      * sometimes you can not cancel an event, i.e. if a player left a region by dying inside of it

@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 
 public class GuiBuilder {
 
-    private String title;
-    private int rows = 3;
     private final Map<Integer, ItemStack> items = new HashMap<>();
     private final Map<Integer, Consumer<InventoryClickEvent>> handlers = new HashMap<>();
+    private String title;
+    private int rows = 3;
     private Consumer<InventoryOpenEvent> openHandler;
     private Consumer<InventoryCloseEvent> closeHandler;
     private boolean cancelClicks = true;

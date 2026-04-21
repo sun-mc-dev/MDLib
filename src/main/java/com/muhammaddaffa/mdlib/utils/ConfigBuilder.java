@@ -11,6 +11,10 @@ public class ConfigBuilder {
         this.configName = configName;
     }
 
+    public static ConfigBuilder create(String configName) {
+        return new ConfigBuilder(configName);
+    }
+
     public ConfigBuilder setDirectory(String directory) {
         this.directory = directory;
         return this;
@@ -30,10 +34,6 @@ public class ConfigBuilder {
         Config config = new Config(configName, directory, shouldReload);
         config.setShouldUpdate(shouldAutoUpdate);
         return config;
-    }
-
-    public static ConfigBuilder create(String configName) {
-        return new ConfigBuilder(configName);
     }
 
 }

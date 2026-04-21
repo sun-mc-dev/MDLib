@@ -93,13 +93,13 @@ class UpdateCheckerMessages {
             }
         }
 
-        if(instance.getSupportLink() != null) {
+        if (instance.getSupportLink() != null) {
             lines.add(" ");
             lines.add("Support:");
             lines.add("  " + instance.getSupportLink());
         }
 
-        if(instance.getDonationLink() != null) {
+        if (instance.getDonationLink() != null) {
             lines.add(" ");
             lines.add("Donate:");
             lines.add("  " + instance.getDonationLink());

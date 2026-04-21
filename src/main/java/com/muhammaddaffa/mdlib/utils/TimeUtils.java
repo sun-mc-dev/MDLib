@@ -16,20 +16,12 @@ public class TimeUtils {
     private static final long YEAR_MS = DAY_MS * 365;
 
     private static final int DAYS_IN_SECOND = 86400;
-
+    private static final Map<String, Long> unitMultipliers = new HashMap<>();
     public static String APPEND_DAYS = "d";
     public static String APPEND_HOURS = "h";
     public static String APPEND_MINUTES = "m";
     public static String APPEND_SECONDS = "s";
     public static boolean SPACE_AFTER_APPEND = true;
-
-    private static final Map<String, Long> unitMultipliers = new HashMap<>();
-
-    private static void addTimeMultiplier(long multiplier, String... keys) {
-        for(String key : keys) {
-            unitMultipliers.put(key, multiplier);
-        }
-    }
 
     static {
         addTimeMultiplier(1, "ms", "milli", "millis", "millisecond", "milliseconds");
@@ -48,72 +40,17 @@ public class TimeUtils {
     }
 
     private TimeUtils(long milliseconds) {
-        if(milliseconds < 0) {
+        if (milliseconds < 0) {
             throw new IllegalArgumentException("Number of milliseconds cannot be less than 0");
         }
 
         this.milliseconds = milliseconds;
     }
 
-    public long toMilliseconds() {
-        return this.milliseconds;
-    }
-
-    public double toTicks() {
-        return this.milliseconds / (double) TICK_MS;
-    }
-
-    public double toSeconds() {
-        return this.milliseconds / (double) SECOND_MS;
-    }
-
-    public double toMinutes() {
-        return this.milliseconds / (double) MINUTE_MS;
-    }
-
-    public double toHours() {
-        return this.milliseconds / (double) HOUR_MS;
-    }
-
-    public double toDays() {
-        return this.milliseconds / (double) DAY_MS;
-    }
-
-    public double toYears() {
-        return this.milliseconds / (double) YEAR_MS;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder timeString = new StringBuilder();
-
-        long time = this.milliseconds;
-
-        time = this.appendTime(time, YEAR_MS, "years", timeString);
-        time = this.appendTime(time, DAY_MS, "days", timeString);
-        time = this.appendTime(time, HOUR_MS, "hours", timeString);
-        time = this.appendTime(time, MINUTE_MS, "minutes", timeString);
-        time = this.appendTime(time, SECOND_MS, "seconds", timeString);
-
-        if(time != 0) {
-            timeString.append(", ").append(time).append(" ms");
+    private static void addTimeMultiplier(long multiplier, String... keys) {
+        for (String key : keys) {
+            unitMultipliers.put(key, multiplier);
         }
-
-        if(timeString.isEmpty()) {
-            return "0 seconds";
-        }
-
-        return timeString.substring(2);
-    }
-
-    private long appendTime(long time, long unitInMS, String name, StringBuilder builder) {
-        long timeInUnits = (time - (time % unitInMS)) / unitInMS;
-
-        if(timeInUnits > 0) {
-            builder.append(", ").append(timeInUnits).append(' ').append(name);
-        }
-
-        return time - timeInUnits * unitInMS;
     }
 
     @Nullable
@@ -126,14 +63,14 @@ public class TimeUtils {
         StringBuilder number = new StringBuilder();
         StringBuilder unit = new StringBuilder();
 
-        for(char c : timeString.toCharArray()) {
-            if(c == ' ' || c == ',') {
+        for (char c : timeString.toCharArray()) {
+            if (c == ' ' || c == ',') {
                 readingNumber = false;
                 continue;
             }
 
-            if(c == '.' || (c >='0' && c <= '9')) {
-                if(!readingNumber) {
+            if (c == '.' || (c >= '0' && c <= '9')) {
+                if (!readingNumber) {
                     totalMilliseconds += parseTimeComponent(number.toString(), unit.toString());
 
                     number.setLength(0);
@@ -149,7 +86,7 @@ public class TimeUtils {
             }
         }
 
-        if(readingNumber) {
+        if (readingNumber) {
             throw new TimeParseException("Number \"" + number + "\" not matched with unit at end of string");
         } else {
             totalMilliseconds += parseTimeComponent(number.toString(), unit.toString());
@@ -159,7 +96,7 @@ public class TimeUtils {
     }
 
     private static double parseTimeComponent(String magnitudeString, String unit) throws TimeParseException {
-        if(magnitudeString.isEmpty()) {
+        if (magnitudeString.isEmpty()) {
             throw new TimeParseException("Missing number for unit \"" + unit + "\"");
         }
 
@@ -167,19 +104,19 @@ public class TimeUtils {
 
         try {
             magnitude = Long.valueOf(magnitudeString);
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new TimeParseException("Unable to parse number \"" + magnitudeString + "\"", e);
         }
 
         unit = unit.toLowerCase();
 
-        if(unit.length() > 3 && unit.substring(unit.length() - 3).equals("and")) {
+        if (unit.length() > 3 && unit.substring(unit.length() - 3).equals("and")) {
             unit = unit.substring(0, unit.length() - 3);
         }
 
         Long unitMultiplier = unitMultipliers.get(unit);
 
-        if(unitMultiplier == null) {
+        if (unitMultiplier == null) {
             throw new TimeParseException("Unknown time unit \"" + unit + "\"");
         }
 
@@ -234,6 +171,67 @@ public class TimeUtils {
 
     private static int toSeconds(long remaining) {
         return (int) (((remaining % DAYS_IN_SECOND) % 3600) % 60);
+    }
+
+    public long toMilliseconds() {
+        return this.milliseconds;
+    }
+
+    public double toTicks() {
+        return this.milliseconds / (double) TICK_MS;
+    }
+
+    public double toSeconds() {
+        return this.milliseconds / (double) SECOND_MS;
+    }
+
+    public double toMinutes() {
+        return this.milliseconds / (double) MINUTE_MS;
+    }
+
+    public double toHours() {
+        return this.milliseconds / (double) HOUR_MS;
+    }
+
+    public double toDays() {
+        return this.milliseconds / (double) DAY_MS;
+    }
+
+    public double toYears() {
+        return this.milliseconds / (double) YEAR_MS;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder timeString = new StringBuilder();
+
+        long time = this.milliseconds;
+
+        time = this.appendTime(time, YEAR_MS, "years", timeString);
+        time = this.appendTime(time, DAY_MS, "days", timeString);
+        time = this.appendTime(time, HOUR_MS, "hours", timeString);
+        time = this.appendTime(time, MINUTE_MS, "minutes", timeString);
+        time = this.appendTime(time, SECOND_MS, "seconds", timeString);
+
+        if (time != 0) {
+            timeString.append(", ").append(time).append(" ms");
+        }
+
+        if (timeString.isEmpty()) {
+            return "0 seconds";
+        }
+
+        return timeString.substring(2);
+    }
+
+    private long appendTime(long time, long unitInMS, String name, StringBuilder builder) {
+        long timeInUnits = (time - (time % unitInMS)) / unitInMS;
+
+        if (timeInUnits > 0) {
+            builder.append(", ").append(timeInUnits).append(' ').append(name);
+        }
+
+        return time - timeInUnits * unitInMS;
     }
 
     public static class TimeParseException extends RuntimeException {

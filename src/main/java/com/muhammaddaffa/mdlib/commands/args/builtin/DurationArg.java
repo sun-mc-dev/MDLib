@@ -22,7 +22,9 @@ public final class DurationArg implements ArgumentType<Integer> {
 
     private final List<String> presets;
 
-    /** Default suggestions: 10s, 30s, 1m, 5m, 1h */
+    /**
+     * Default suggestions: 10s, 30s, 1m, 5m, 1h
+     */
     public DurationArg() {
         this(List.of("10s", "30s", "1m", "5m", "1h"));
     }

@@ -18,12 +18,10 @@ import java.util.Locale;
 
 public final class MDLib {
 
-    private static JavaPlugin instance;
-
     public static boolean LISTEN_VAULT = true;
     public static boolean LISTEN_WORLDGUARD = false;
     public static boolean CUSTOM_BLOCK_DATA = false;
-
+    private static JavaPlugin instance;
     private static boolean PLACEHOLDER_API, VAULT, WORLD_GUARD;
 
     private static CommandRegistry commands;

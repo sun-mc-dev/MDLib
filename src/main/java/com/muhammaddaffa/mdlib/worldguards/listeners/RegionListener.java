@@ -15,7 +15,7 @@ public class RegionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLogin(PlayerLoginEvent e) {
-        if(e.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
+        if (e.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
         WgEntity.getPlayerCache().remove(e.getPlayer().getUniqueId());
         WgEntity.getPlayerCache().put(e.getPlayer().getUniqueId(), new WgEntity(e.getPlayer()));
     }
@@ -23,7 +23,7 @@ public class RegionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent e) {
         final WgEntity we = WgEntity.get(e.getPlayer().getUniqueId());
-        if(we != null) {
+        if (we != null) {
             we.updateRegions(MovementWay.SPAWN, e.getPlayer().getLocation(), e.getPlayer().getLocation());
         }
     }

@@ -1,10 +1,12 @@
 # MDLib Extended
 
 [![](https://jitpack.io/v/mdaffa48/MDLib.svg)](https://jitpack.io/#mdaffa48/MDLib)
+
 ```xml
+
 <repository>
-  <id>jitpack.io</id>
-  <url>https://jitpack.io</url>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
 </repository>
 
 <dependency>
@@ -15,6 +17,7 @@
 ```
 
 # Command Example
+
 ```java
 public final class KitCommand extends RoutedCommand {
     public KitCommand() {
@@ -23,22 +26,29 @@ public final class KitCommand extends RoutedCommand {
 
         // root level aliases
         alias("kitkit", "k");
-        
+
         root() // `/kit <name>`
-          .arg("name", new StringArg())
-          .exec((sender, ctx) -> { /* apply kit */ return true; });
+                .arg("name", new StringArg())
+                .exec((sender, ctx) -> { /* apply kit */
+                    return true;
+                });
 
         sub("give") // `/kit give <player> <name> [silent]`
-          .alias("g", "grant")    // sub-level aliases   
-          .perm("yourplugin.kit.give")
-          .arg("player", new OnlinePlayerArg())
-          .arg("name", new StringArg())
-          .argOptional("silent", new BoolArg())
-          .exec((sender, ctx) -> { /* give kit to target */ return true; });
+                .alias("g", "grant")    // sub-level aliases   
+                .perm("yourplugin.kit.give")
+                .arg("player", new OnlinePlayerArg())
+                .arg("name", new StringArg())
+                .argOptional("silent", new BoolArg())
+                .exec((sender, ctx) -> { /* give kit to target */
+                    return true;
+                });
 
         sub("reload") // `/kit reload`
-          .perm("yourplugin.kit.admin")
-          .exec((sender, ctx) -> { sender.sendMessage("§aKits reloaded."); return true; });
+                .perm("yourplugin.kit.admin")
+                .exec((sender, ctx) -> {
+                    sender.sendMessage("§aKits reloaded.");
+                    return true;
+                });
     }
 }
 ```

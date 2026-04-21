@@ -26,5 +26,7 @@ public final class CommandContext {
         return v == null ? def : v;
     }
 
-    public boolean has(String name) { return values.containsKey(name); }
+    public boolean has(String name) {
+        return values.containsKey(name);
+    }
 }

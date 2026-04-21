@@ -93,7 +93,8 @@ public class FoliaProvider implements ExecutorProvider {
     public HandleTask playerTimer(Player player, long delayTicks, long periodTicks, Runnable runnable) {
         ScheduledTask scheduledTask = player.getScheduler().runAtFixedRate(
                 MDLib.instance(),
-                task -> {},
+                task -> {
+                },
                 runnable,
                 delayTicks,
                 periodTicks

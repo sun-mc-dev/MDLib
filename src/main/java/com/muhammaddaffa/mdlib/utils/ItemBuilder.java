@@ -8,13 +8,10 @@ import dev.lone.itemsadder.api.CustomStack;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.items.MythicItem;
-import io.lumine.mythic.lib.api.item.NBTItem;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.Indyuce.mmoitems.MMOItems;
-import net.Indyuce.mmoitems.api.MMOItemsAPI;
 import net.Indyuce.mmoitems.api.Type;
-import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -52,227 +49,6 @@ public class ItemBuilder {
         if (this.meta == null) {
             throw new IllegalArgumentException("The type " + item.getType() + " doesn't support item meta");
         }
-    }
-
-    public ItemMeta getItemMeta() {
-        return meta;
-    }
-
-    public ItemBuilder type(Material material) {
-        this.item.setType(material);
-        return this;
-    }
-
-    public ItemBuilder data(int data) {
-        return durability((short) data);
-    }
-
-    @Deprecated
-    public ItemBuilder durability(short durability) {
-        this.item.setDurability(durability);
-        return this;
-    }
-
-    public ItemBuilder amount(int amount) {
-        this.item.setAmount(amount);
-        return this;
-    }
-
-    public ItemBuilder enchant(Enchantment enchantment) {
-        return enchant(enchantment, 1);
-    }
-
-    public ItemBuilder enchant(Enchantment enchantment, int level) {
-        this.meta.addEnchant(enchantment, level, true);
-        return this;
-    }
-
-    public ItemBuilder removeEnchant(Enchantment enchantment) {
-        this.meta.removeEnchant(enchantment);
-        return this;
-    }
-
-    public ItemBuilder removeEnchants() {
-        this.meta.getEnchants().keySet().forEach(this.meta::removeEnchant);
-        return this;
-    }
-
-    public ItemBuilder meta(Consumer<ItemMeta> metaConsumer) {
-        metaConsumer.accept(this.meta);
-        return this;
-    }
-
-    public <T extends ItemMeta> ItemBuilder meta(Class<T> metaClass, Consumer<T> metaConsumer) {
-        if (metaClass.isInstance(this.meta)) {
-            metaConsumer.accept(metaClass.cast(this.meta));
-        }
-        return this;
-    }
-
-    public ItemBuilder name(String name) {
-        this.meta.setDisplayName(Common.color(name));
-        return this;
-    }
-
-    public ItemBuilder lore(String lore) {
-        return lore(Collections.singletonList(lore));
-    }
-
-    public ItemBuilder lore(String... lore) {
-        return lore(Arrays.asList(lore));
-    }
-
-    public ItemBuilder lore(List<String> lore) {
-        this.meta.setLore(Common.color(lore));
-        return this;
-    }
-
-    public ItemBuilder addLore(String line) {
-        List<String> lore = this.meta.getLore();
-
-        if (lore == null) {
-            return lore(line);
-        }
-
-        lore.add(line);
-        return lore(lore);
-    }
-
-    public ItemBuilder addLore(String... lines) {
-        return addLore(Arrays.asList(lines));
-    }
-
-    public ItemBuilder addLore(List<String> lines) {
-        List<String> lore = this.meta.getLore();
-
-        if (lore == null) {
-            return lore(lines);
-        }
-
-        lore.addAll(lines);
-        return lore(lore);
-    }
-
-    public ItemBuilder flags(ItemFlag... flags) {
-        this.meta.addItemFlags(flags);
-        return this;
-    }
-
-    public ItemBuilder flags() {
-        return flags(ItemFlag.values());
-    }
-
-    public ItemBuilder removeFlags(ItemFlag... flags) {
-        this.meta.removeItemFlags(flags);
-        return this;
-    }
-
-    public ItemBuilder removeFlags() {
-        return removeFlags(ItemFlag.values());
-    }
-
-    public ItemBuilder armorColor(Color color) {
-        return meta(LeatherArmorMeta.class, m -> m.setColor(color));
-    }
-
-    public ItemBuilder customModelData(int data){
-        this.meta.setCustomModelData(data);
-        return this;
-    }
-
-    public ItemBuilder itemModel(NamespacedKey key){
-        this.meta.setItemModel(key);
-        return this;
-    }
-
-    public ItemBuilder pdc(NamespacedKey key, String s){
-        this.meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, s);
-        return this;
-    }
-
-    public ItemBuilder pdc(NamespacedKey key, Double d){
-        this.meta.getPersistentDataContainer().set(key, PersistentDataType.DOUBLE, d);
-        return this;
-    }
-
-    public ItemBuilder pdc(NamespacedKey key, Float f){
-        this.meta.getPersistentDataContainer().set(key, PersistentDataType.FLOAT, f);
-        return this;
-    }
-
-    public ItemBuilder pdc(NamespacedKey key, Integer i){
-        this.meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, i);
-        return this;
-    }
-
-    public ItemBuilder pdc(NamespacedKey key, Long l){
-        this.meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, l);
-        return this;
-    }
-
-    public ItemBuilder pdc(NamespacedKey key, Byte b){
-        this.meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, b);
-        return this;
-    }
-
-    public ItemBuilder skull(String identifier){
-        ProfileInputType input = ProfileInputType.typeOf(identifier);
-        if (input != null)
-            XSkull.of(this.meta).profile(Profileable.of(input, identifier)).apply();
-        return this;
-    }
-
-    public ItemBuilder skull(OfflinePlayer identifier){
-        XSkull.of(this.meta).profile(Profileable.of(identifier)).apply();
-        return this;
-    }
-
-    public ItemBuilder skull(UUID identifier){
-        XSkull.of(this.meta).profile(Profileable.of(identifier)).apply();
-        return this;
-    }
-
-    public ItemBuilder placeholder(Placeholder placeholder) {
-        this.name(placeholder.translate(this.meta.getDisplayName()));
-        if (this.meta.getLore() != null) {
-            this.lore(placeholder.translate(this.meta.getLore()));
-        }
-        return this;
-    }
-
-    public ItemBuilder attribute(Material material, EquipmentSlot slot) {
-        this.meta.setAttributeModifiers(material.getDefaultAttributeModifiers(slot));
-        return this;
-    }
-
-    public ItemBuilder loreCustom(String key, String replacer) {
-        return loreCustom(key, replacer, null);
-    }
-
-    public ItemBuilder loreCustom(String key, String replacer, @Nullable Placeholder placeholder) {
-        return loreCustom(key, List.of(replacer), placeholder);
-    }
-
-    public ItemBuilder loreCustom(String key, List<String> replacer) {
-        return loreCustom(key, replacer, null);
-    }
-
-    public ItemBuilder loreCustom(String key, List<String> replacer, @Nullable Placeholder placeholder) {
-        List<String> lore = new ArrayList<>();
-        // Check if the placeholder is not null
-        if (placeholder != null) replacer = placeholder.translate(replacer);
-        // Get the lore
-        if (meta != null && meta.getLore() != null) {
-            for (String line : meta.getLore()) {
-                if (line.contains(key)) {
-                    lore.addAll(replacer);
-                    continue;
-                }
-                lore.add(line);
-            }
-        }
-        this.lore(lore);
-        return this;
     }
 
     @Nullable
@@ -450,11 +226,6 @@ public class ItemBuilder {
         return new ItemBuilder(mat == null ? Material.DIRT : mat);
     }
 
-    public ItemStack build() {
-        this.item.setItemMeta(this.meta);
-        return this.item;
-    }
-
     private static boolean isPlaceholderAPI() {
         return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
     }
@@ -500,11 +271,238 @@ public class ItemBuilder {
         return new ParsedType(namespace, value, extra, extraValues);
     }
 
+    public ItemMeta getItemMeta() {
+        return meta;
+    }
+
+    public ItemBuilder type(Material material) {
+        this.item.setType(material);
+        return this;
+    }
+
+    public ItemBuilder data(int data) {
+        return durability((short) data);
+    }
+
+    @Deprecated
+    public ItemBuilder durability(short durability) {
+        this.item.setDurability(durability);
+        return this;
+    }
+
+    public ItemBuilder amount(int amount) {
+        this.item.setAmount(amount);
+        return this;
+    }
+
+    public ItemBuilder enchant(Enchantment enchantment) {
+        return enchant(enchantment, 1);
+    }
+
+    public ItemBuilder enchant(Enchantment enchantment, int level) {
+        this.meta.addEnchant(enchantment, level, true);
+        return this;
+    }
+
+    public ItemBuilder removeEnchant(Enchantment enchantment) {
+        this.meta.removeEnchant(enchantment);
+        return this;
+    }
+
+    public ItemBuilder removeEnchants() {
+        this.meta.getEnchants().keySet().forEach(this.meta::removeEnchant);
+        return this;
+    }
+
+    public ItemBuilder meta(Consumer<ItemMeta> metaConsumer) {
+        metaConsumer.accept(this.meta);
+        return this;
+    }
+
+    public <T extends ItemMeta> ItemBuilder meta(Class<T> metaClass, Consumer<T> metaConsumer) {
+        if (metaClass.isInstance(this.meta)) {
+            metaConsumer.accept(metaClass.cast(this.meta));
+        }
+        return this;
+    }
+
+    public ItemBuilder name(String name) {
+        this.meta.setDisplayName(Common.color(name));
+        return this;
+    }
+
+    public ItemBuilder lore(String lore) {
+        return lore(Collections.singletonList(lore));
+    }
+
+    public ItemBuilder lore(String... lore) {
+        return lore(Arrays.asList(lore));
+    }
+
+    public ItemBuilder lore(List<String> lore) {
+        this.meta.setLore(Common.color(lore));
+        return this;
+    }
+
+    public ItemBuilder addLore(String line) {
+        List<String> lore = this.meta.getLore();
+
+        if (lore == null) {
+            return lore(line);
+        }
+
+        lore.add(line);
+        return lore(lore);
+    }
+
+    public ItemBuilder addLore(String... lines) {
+        return addLore(Arrays.asList(lines));
+    }
+
+    public ItemBuilder addLore(List<String> lines) {
+        List<String> lore = this.meta.getLore();
+
+        if (lore == null) {
+            return lore(lines);
+        }
+
+        lore.addAll(lines);
+        return lore(lore);
+    }
+
+    public ItemBuilder flags(ItemFlag... flags) {
+        this.meta.addItemFlags(flags);
+        return this;
+    }
+
+    public ItemBuilder flags() {
+        return flags(ItemFlag.values());
+    }
+
+    public ItemBuilder removeFlags(ItemFlag... flags) {
+        this.meta.removeItemFlags(flags);
+        return this;
+    }
+
+    public ItemBuilder removeFlags() {
+        return removeFlags(ItemFlag.values());
+    }
+
+    public ItemBuilder armorColor(Color color) {
+        return meta(LeatherArmorMeta.class, m -> m.setColor(color));
+    }
+
+    public ItemBuilder customModelData(int data) {
+        this.meta.setCustomModelData(data);
+        return this;
+    }
+
+    public ItemBuilder itemModel(NamespacedKey key) {
+        this.meta.setItemModel(key);
+        return this;
+    }
+
+    public ItemBuilder pdc(NamespacedKey key, String s) {
+        this.meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, s);
+        return this;
+    }
+
+    public ItemBuilder pdc(NamespacedKey key, Double d) {
+        this.meta.getPersistentDataContainer().set(key, PersistentDataType.DOUBLE, d);
+        return this;
+    }
+
+    public ItemBuilder pdc(NamespacedKey key, Float f) {
+        this.meta.getPersistentDataContainer().set(key, PersistentDataType.FLOAT, f);
+        return this;
+    }
+
+    public ItemBuilder pdc(NamespacedKey key, Integer i) {
+        this.meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, i);
+        return this;
+    }
+
+    public ItemBuilder pdc(NamespacedKey key, Long l) {
+        this.meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, l);
+        return this;
+    }
+
+    public ItemBuilder pdc(NamespacedKey key, Byte b) {
+        this.meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, b);
+        return this;
+    }
+
+    public ItemBuilder skull(String identifier) {
+        ProfileInputType input = ProfileInputType.typeOf(identifier);
+        if (input != null)
+            XSkull.of(this.meta).profile(Profileable.of(input, identifier)).apply();
+        return this;
+    }
+
+    public ItemBuilder skull(OfflinePlayer identifier) {
+        XSkull.of(this.meta).profile(Profileable.of(identifier)).apply();
+        return this;
+    }
+
+    public ItemBuilder skull(UUID identifier) {
+        XSkull.of(this.meta).profile(Profileable.of(identifier)).apply();
+        return this;
+    }
+
+    public ItemBuilder placeholder(Placeholder placeholder) {
+        this.name(placeholder.translate(this.meta.getDisplayName()));
+        if (this.meta.getLore() != null) {
+            this.lore(placeholder.translate(this.meta.getLore()));
+        }
+        return this;
+    }
+
+    public ItemBuilder attribute(Material material, EquipmentSlot slot) {
+        this.meta.setAttributeModifiers(material.getDefaultAttributeModifiers(slot));
+        return this;
+    }
+
+    public ItemBuilder loreCustom(String key, String replacer) {
+        return loreCustom(key, replacer, null);
+    }
+
+    public ItemBuilder loreCustom(String key, String replacer, @Nullable Placeholder placeholder) {
+        return loreCustom(key, List.of(replacer), placeholder);
+    }
+
+    public ItemBuilder loreCustom(String key, List<String> replacer) {
+        return loreCustom(key, replacer, null);
+    }
+
+    public ItemBuilder loreCustom(String key, List<String> replacer, @Nullable Placeholder placeholder) {
+        List<String> lore = new ArrayList<>();
+        // Check if the placeholder is not null
+        if (placeholder != null) replacer = placeholder.translate(replacer);
+        // Get the lore
+        if (meta != null && meta.getLore() != null) {
+            for (String line : meta.getLore()) {
+                if (line.contains(key)) {
+                    lore.addAll(replacer);
+                    continue;
+                }
+                lore.add(line);
+            }
+        }
+        this.lore(lore);
+        return this;
+    }
+
+    public ItemStack build() {
+        this.item.setItemMeta(this.meta);
+        return this.item;
+    }
+
     public record ParsedType(
             String namespace,
             String value,
             String extra,          // <-- parts[2], used for MMOItems
             List<String> extras    // <-- parts[3...n]
-    ) {}
+    ) {
+    }
 
 }

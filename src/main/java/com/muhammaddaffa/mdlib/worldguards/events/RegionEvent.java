@@ -3,10 +3,8 @@ package com.muhammaddaffa.mdlib.worldguards.events;
 import com.muhammaddaffa.mdlib.worldguards.MovementWay;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.*;
 
 public abstract class RegionEvent extends Event {
 
@@ -22,6 +20,10 @@ public abstract class RegionEvent extends Event {
         this.movement = movement;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlerList;
+    }
+
     @Override
     public HandlerList getHandlers() {
         return handlerList;
@@ -33,10 +35,6 @@ public abstract class RegionEvent extends Event {
 
     public LivingEntity getEntity() {
         return entity;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlerList;
     }
 
     public MovementWay getMovementWay() {

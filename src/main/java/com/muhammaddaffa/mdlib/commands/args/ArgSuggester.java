@@ -9,8 +9,6 @@ import java.util.function.BiFunction;
 
 @FunctionalInterface
 public interface ArgSuggester {
-    List<String> suggest(CommandSender sender, String prefix, PartialContext prev);
-
     static ArgSuggester ofList(List<String> values) {
         return (sender, prefix, prev) -> {
             List<String> out = new ArrayList<>();
@@ -26,6 +24,8 @@ public interface ArgSuggester {
     static ArgSuggester ofDynamic(TriFunction<CommandSender, String, PartialContext, List<String>> fn) {
         return fn::apply;
     }
+
+    List<String> suggest(CommandSender sender, String prefix, PartialContext prev);
 
 
     @FunctionalInterface

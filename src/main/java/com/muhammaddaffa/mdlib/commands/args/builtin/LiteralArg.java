@@ -19,7 +19,10 @@ public final class LiteralArg implements ArgumentType<String> {
         this.literals = Arrays.stream(literals).toList();
     }
 
-    @Override public String id() { return "<" + String.join("|", literals) + ">"; }
+    @Override
+    public String id() {
+        return "<" + String.join("|", literals) + ">";
+    }
 
     @Override
     public String parse(CommandSender sender, TokenReader tokens) throws ArgParseException {
@@ -38,6 +41,9 @@ public final class LiteralArg implements ArgumentType<String> {
         return out;
     }
 
-    @Override public boolean greedy() { return false; }
+    @Override
+    public boolean greedy() {
+        return false;
+    }
 
 }

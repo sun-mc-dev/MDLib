@@ -22,14 +22,18 @@ public final class EnumArg<E extends Enum<E>> implements ArgumentType<E> {
                 + ">";
     }
 
-    @Override public String id() { return id; }
+    @Override
+    public String id() {
+        return id;
+    }
 
     @Override
     public E parse(CommandSender s, TokenReader t) {
         String raw = t.next();
         if (raw == null) throw new ArgParseException("Expected " + id());
-        try { return Enum.valueOf(type, raw.toUpperCase(Locale.ROOT)); }
-        catch (IllegalArgumentException ex) {
+        try {
+            return Enum.valueOf(type, raw.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
             throw new ArgParseException("Expected " + id() + ", got '" + raw + "'");
         }
     }

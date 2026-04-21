@@ -3,9 +3,7 @@ package com.muhammaddaffa.mdlib.task;
 import com.muhammaddaffa.mdlib.task.handleTask.HandleTask;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public interface ExecutorProvider {

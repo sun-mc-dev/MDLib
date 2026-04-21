@@ -21,8 +21,23 @@ public abstract class BaseCommand implements SimpleCommandSpec {
         this.permission = permission;
     }
 
-    @Override public String name() { return name; }
-    @Override public String description() { return description; }
-    @Override public String usage() { return usage; }
-    @Override public String permission() { return permission; }
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public String description() {
+        return description;
+    }
+
+    @Override
+    public String usage() {
+        return usage;
+    }
+
+    @Override
+    public String permission() {
+        return permission;
+    }
 }

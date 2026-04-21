@@ -34,13 +34,13 @@ class DefaultArtifactVersion implements ArtifactVersion {
 
     @Override
     public boolean equals(final Object other) {
-        return this == other || (other instanceof ArtifactVersion && this.compareTo((ArtifactVersion)other) == 0);
+        return this == other || (other instanceof ArtifactVersion && this.compareTo((ArtifactVersion) other) == 0);
     }
 
     @Override
     public int compareTo(final @NotNull ArtifactVersion otherVersion) {
         if (otherVersion instanceof DefaultArtifactVersion) {
-            return this.comparable.compareTo(((DefaultArtifactVersion)otherVersion).comparable);
+            return this.comparable.compareTo(((DefaultArtifactVersion) otherVersion).comparable);
         }
         return this.compareTo(new DefaultArtifactVersion(otherVersion.toString()));
     }

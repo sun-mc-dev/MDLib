@@ -10,7 +10,11 @@ public interface ArgumentType<T> {
 
     T parse(CommandSender sender, TokenReader tokens) throws ArgParseException;
 
-    default List<String> suggestions(CommandSender sender, String prefix) { return Collections.emptyList(); }
+    default List<String> suggestions(CommandSender sender, String prefix) {
+        return Collections.emptyList();
+    }
 
-    default boolean greedy() { return false; }
+    default boolean greedy() {
+        return false;
+    }
 }

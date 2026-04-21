@@ -27,5 +27,5 @@ public class Logger {
             MDLib.instance().getLogger().finest(message);
         }
     }
-    
+
 }

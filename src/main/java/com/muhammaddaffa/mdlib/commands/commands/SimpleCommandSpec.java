@@ -8,10 +8,22 @@ import java.util.List;
 
 public interface SimpleCommandSpec {
     String name();
-    default List<String> aliases() { return Collections.emptyList(); }
-    default String description() { return ""; }
-    default String usage() { return "/" + name(); }
-    default String permission() { return null; }
+
+    default List<String> aliases() {
+        return Collections.emptyList();
+    }
+
+    default String description() {
+        return "";
+    }
+
+    default String usage() {
+        return "/" + name();
+    }
+
+    default String permission() {
+        return null;
+    }
 
     default void register() {
         MDLib.getCommandRegistry().register(this);

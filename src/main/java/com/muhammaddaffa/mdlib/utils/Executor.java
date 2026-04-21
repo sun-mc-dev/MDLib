@@ -33,5 +33,5 @@ public class Executor {
     private static ExecutorProvider provider() {
         return ExecutorManager.getProvider();
     }
-    
+
 }

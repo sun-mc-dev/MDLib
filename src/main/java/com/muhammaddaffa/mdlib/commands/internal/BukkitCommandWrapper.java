@@ -22,7 +22,10 @@ public class BukkitCommandWrapper extends Command implements PluginIdentifiableC
         if (perm != null && !perm.isBlank()) setPermission(perm);
     }
 
-    @Override public @NotNull Plugin getPlugin() { return owningPlugin; }
+    @Override
+    public @NotNull Plugin getPlugin() {
+        return owningPlugin;
+    }
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {

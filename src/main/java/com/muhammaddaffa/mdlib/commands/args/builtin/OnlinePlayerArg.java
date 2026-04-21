@@ -11,7 +11,10 @@ import java.util.List;
 
 public final class OnlinePlayerArg implements ArgumentType<Player> {
 
-    @Override public String id() { return "<player>"; }
+    @Override
+    public String id() {
+        return "<player>";
+    }
 
     @Override
     public Player parse(CommandSender s, TokenReader t) {

@@ -22,11 +22,12 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives a {@link ProtectedRegion} via id.
+     *
      * @param regionId Id of the {@link ProtectedRegion}
      * @return Instance of a {@link ProtectedRegion} - null if the {@link ProtectedRegion} does not exist
      */
     public static ProtectedRegion getRegion(String regionId) {
-        for(World world : Bukkit.getWorlds()) {
+        for (World world : Bukkit.getWorlds()) {
             final ProtectedRegion rg = getRegion(regionId, world);
             if (rg != null) {
                 return rg;
@@ -37,13 +38,14 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Checks if {@link Location} is in {@link ProtectedRegion}
-     * @param loc {@link Location Location} which should be checked
+     *
+     * @param loc      {@link Location Location} which should be checked
      * @param regionId Id of the {@link ProtectedRegion}
      * @return true if the {@link Location} is in the {@link ProtectedRegion Region}
      */
     public static boolean isInRegion(Location loc, String regionId) {
-        for(ProtectedRegion region : getRegions(loc)) {
-            if(region.getId().equalsIgnoreCase(regionId)) {
+        for (ProtectedRegion region : getRegions(loc)) {
+            if (region.getId().equalsIgnoreCase(regionId)) {
                 return true;
             }
         }
@@ -52,8 +54,9 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives the {@link ProtectedRegion} via id.
+     *
      * @param regionId Id of the {@link ProtectedRegion}
-     * @param world {@link World} which the region is in
+     * @param world    {@link World} which the region is in
      * @return Instance of {@link ProtectedRegion} - null if the {@link ProtectedRegion} does not exist
      */
     public static ProtectedRegion getRegion(String regionId, World world) {
@@ -67,12 +70,13 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives a {@link Map} of all {@link ProtectedRegion ProtectedRegions}.
+     *
      * @return A {@link Map} of all {@link ProtectedRegion ProtectedRegions} that exists.
      */
     public static Map<String, ProtectedRegion> getRegions() {
         final Map<String, ProtectedRegion> regions = new HashMap<>();
         final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        for(World world : Bukkit.getWorlds()) {
+        for (World world : Bukkit.getWorlds()) {
             regions.putAll(container.get(BukkitAdapter.adapt(world)).getRegions());
         }
         return regions;
@@ -80,6 +84,7 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives all {@link ProtectedRegion ProtectedRegions} that exists in a {@link World}
+     *
      * @param world {@link World} to be checked
      * @return A {@link Map} of all {@link ProtectedRegion ProtectedRegions} that exists in a {@link World}.
      */
@@ -90,6 +95,7 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives a {@link ApplicableRegionSet} via a {@link Location}.
+     *
      * @param loc {@link Location} of the {@link ApplicableRegionSet}
      * @return Instance of {@link ApplicableRegionSet}
      */
@@ -99,14 +105,15 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives a {@link List} of players that are in a specific region via id.
+     *
      * @param regionId Id of the {@link ProtectedRegion}
      * @return List of {@link LivingEntity entities}
      */
     public static List<LivingEntity> getEntitiesInRegion(String regionId) {
         final List<LivingEntity> entities = new ArrayList<>();
-        for(WgEntity we : WgEntity.getPlayerCache().values()) {
+        for (WgEntity we : WgEntity.getPlayerCache().values()) {
             we.getRegions().forEach(protectedRegion -> {
-                if(regionId.equals(protectedRegion.getId())) entities.add(we.getEntity());
+                if (regionId.equals(protectedRegion.getId())) entities.add(we.getEntity());
             });
         }
         return entities;
@@ -114,6 +121,7 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives a {@link List} of players that are in a specific region via id.
+     *
      * @param regionId Id of the {@link ProtectedRegion}
      * @return List of {@link Player players}
      */
@@ -126,13 +134,14 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives a {@link List} of players that are in a specific region via {@link ProtectedRegion}.
+     *
      * @param protectedRegion {@link ProtectedRegion} to be checked
      * @return List of {@link LivingEntity entities}
      */
     public List<LivingEntity> getEntitiesInRegion(ProtectedRegion protectedRegion) {
         final List<LivingEntity> players = new ArrayList<>();
-        for(WgEntity we : WgEntity.getPlayerCache().values()) {
-            if(we.getRegions().contains(protectedRegion)) {
+        for (WgEntity we : WgEntity.getPlayerCache().values()) {
+            if (we.getRegions().contains(protectedRegion)) {
                 players.add(we.getEntity());
             }
         }
@@ -141,6 +150,7 @@ public class SimpleWorldGuardAPI {
 
     /**
      * Receives a {@link List} of players that are in a specific region via {@link ProtectedRegion}.
+     *
      * @param protectedRegion {@link ProtectedRegion} to be checked
      * @return List of {@link LivingEntity entities}
      */

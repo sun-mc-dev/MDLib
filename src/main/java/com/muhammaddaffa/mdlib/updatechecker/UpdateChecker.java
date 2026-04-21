@@ -52,7 +52,7 @@ public class UpdateChecker {
     private static final String POLYMART_UPDATE_API = "https://api.polymart.org/v1/getResourceInfoSimple/?resource_id=%s&key=version";
     private static final String SPIGET_UPDATE_API = "https://api.spiget.org/v2/resources/%s/versions/latest";
     private static final String GITHUB_RELEASE_API = "https://api.github.com/repos/%s/%s/releases";
-    private static final String HANGAR_RELEASE_API =  "https://hangar.papermc.io/api/v1/projects/%s/%s/latest?channel=%s";
+    private static final String HANGAR_RELEASE_API = "https://hangar.papermc.io/api/v1/projects/%s/%s/latest?channel=%s";
     private static UpdateChecker instance = null;
     private static boolean listenerAlreadyRegistered = false;
 
@@ -109,30 +109,6 @@ public class UpdateChecker {
         init();
     }
 
-    private void init() {
-        Objects.requireNonNull(plugin, "Plugin cannot be null.");
-
-        this.usedVersion = plugin.getDescription().getVersion().trim();
-
-        if (detectPaidVersion()) {
-            usingPaidVersion = true;
-        }
-
-        if (!listenerAlreadyRegistered) {
-            Bukkit.getPluginManager().registerEvents(new UpdateCheckListener(), plugin);
-            listenerAlreadyRegistered = true;
-        }
-    }
-
-    /**
-     * Detects whether the Spigot User ID placeholder has been properly replaced by a numeric string
-     *
-     * @return true if the Spigot User ID placeholder has been properly replaced by a numeric string
-     */
-    private boolean detectPaidVersion() {
-        return spigotUserId.matches("^[0-9]+$");
-    }
-
     /**
      * Initializes an UpdateChecker instance.
      *
@@ -181,7 +157,7 @@ public class UpdateChecker {
             }
             case HANGAR: {
                 String[] split = parameter.split("/");
-                if (split.length <3) {
+                if (split.length < 3) {
                     throw new IllegalArgumentException("Given HangarMC project must be in the format \"<UserOrOrganizationName>/<ProjectName>/<ReleaseChannel>\"");
                 }
 
@@ -255,6 +231,43 @@ public class UpdateChecker {
         if (packageName.startsWith(defaultPackageDe) || packageName.startsWith(defaultPackageCom) || packageName.startsWith(examplePackage)) {
             throw new IllegalStateException("SpigotUpdateChecker class has not been relocated correctly! Check the GitHub's README.md for instructions.");
         }
+    }
+
+    /**
+     * Checks whether one version is really newer than another according to the semantic versioning scheme, including letters.
+     *
+     * @param myVersion    One version string
+     * @param otherVersion Another version string
+     * @return true if the other version is indeed newer, otherwise false
+     */
+    public static boolean isOtherVersionNewer(String myVersion, String otherVersion) {
+        DefaultArtifactVersion used = new DefaultArtifactVersion(myVersion);
+        DefaultArtifactVersion latest = new DefaultArtifactVersion(otherVersion);
+        return used.compareTo(latest) < 0;
+    }
+
+    private void init() {
+        Objects.requireNonNull(plugin, "Plugin cannot be null.");
+
+        this.usedVersion = plugin.getDescription().getVersion().trim();
+
+        if (detectPaidVersion()) {
+            usingPaidVersion = true;
+        }
+
+        if (!listenerAlreadyRegistered) {
+            Bukkit.getPluginManager().registerEvents(new UpdateCheckListener(), plugin);
+            listenerAlreadyRegistered = true;
+        }
+    }
+
+    /**
+     * Detects whether the Spigot User ID placeholder has been properly replaced by a numeric string
+     *
+     * @return true if the Spigot User ID placeholder has been properly replaced by a numeric string
+     */
+    private boolean detectPaidVersion() {
+        return spigotUserId.matches("^[0-9]+$");
     }
 
     /**
@@ -372,19 +385,6 @@ public class UpdateChecker {
      */
     public boolean isUsingLatestVersion() {
         return usedVersion.equals(instance.latestVersion);
-    }
-
-    /**
-     * Checks whether one version is really newer than another according to the semantic versioning scheme, including letters.
-     *
-     * @param myVersion    One version string
-     * @param otherVersion Another version string
-     * @return true if the other version is indeed newer, otherwise false
-     */
-    public static boolean isOtherVersionNewer(String myVersion, String otherVersion) {
-        DefaultArtifactVersion used = new DefaultArtifactVersion(myVersion);
-        DefaultArtifactVersion latest = new DefaultArtifactVersion(otherVersion);
-        return used.compareTo(latest) < 0;
     }
 
     /**

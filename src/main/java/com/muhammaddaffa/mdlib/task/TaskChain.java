@@ -7,9 +7,6 @@ import java.util.List;
 
 public class TaskChain {
 
-    private record Step(boolean async, long delayTicks, Runnable task) {
-    }
-
     private final List<Step> steps = new ArrayList<>();
     private long cursor = 0;
 
@@ -59,5 +56,8 @@ public class TaskChain {
             handles.add(handle);
         }
         return handles;
+    }
+
+    private record Step(boolean async, long delayTicks, Runnable task) {
     }
 }

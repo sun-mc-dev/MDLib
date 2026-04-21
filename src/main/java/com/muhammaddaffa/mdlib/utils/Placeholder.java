@@ -11,7 +11,7 @@ public class Placeholder {
 
     public Placeholder add(String original, String replacement) {
         if (original == null || replacement == null) {
-           return this;
+            return this;
         }
         this.replacements.put(original, replacement);
         return this;
