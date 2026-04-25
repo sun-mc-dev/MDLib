@@ -1,14 +1,14 @@
 package com.muhammaddaffa.mdlib;
 
 import com.jeff_media.customblockdata.CustomBlockData;
-import com.muhammaddaffa.mdlib.commands.CommandRegistry;
-import com.muhammaddaffa.mdlib.hooks.VaultEconomy;
+import com.muhammaddaffa.mdlib.command.CommandRegistry;
+import com.muhammaddaffa.mdlib.hook.VaultEconomy;
 import com.muhammaddaffa.mdlib.papi.MDLibExpansion;
 import com.muhammaddaffa.mdlib.scoreboard.ScoreboardManager;
-import com.muhammaddaffa.mdlib.utils.Logger;
-import com.muhammaddaffa.mdlib.worldguards.listeners.RegionListener;
-import com.muhammaddaffa.mdlib.worldguards.listeners.entity.EntityRegionListener;
-import com.muhammaddaffa.mdlib.worldguards.listeners.entity.EntityRemoveListenerV1_20_4;
+import com.muhammaddaffa.mdlib.util.Logger;
+import com.muhammaddaffa.mdlib.worldguard.listeners.RegionListener;
+import com.muhammaddaffa.mdlib.worldguard.listeners.entity.EntityRegionListener;
+import com.muhammaddaffa.mdlib.worldguard.listeners.entity.EntityRemoveListenerV1_20_4;
 import fr.mrmicky.fastinv.FastInvManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -22,7 +22,7 @@ public final class MDLib {
     public static boolean LISTEN_WORLDGUARD = false;
     public static boolean CUSTOM_BLOCK_DATA = false;
     private static JavaPlugin instance;
-    private static boolean PLACEHOLDER_API, VAULT, WORLD_GUARD;
+    private static boolean PLACEHOLDER_API, VAULT, WORLD_GUARD, WORLD_EDIT, FAWE;
 
     private static CommandRegistry commands;
     private static ScoreboardManager scoreboardManager;
@@ -37,6 +37,8 @@ public final class MDLib {
         PLACEHOLDER_API = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
         VAULT = Bukkit.getPluginManager().getPlugin("Vault") != null;
         WORLD_GUARD = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
+        WORLD_EDIT = Bukkit.getPluginManager().getPlugin("WorldEdit") != null;
+        FAWE = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit") != null;
         registerListeners();
     }
 
@@ -103,6 +105,14 @@ public final class MDLib {
         return WORLD_GUARD;
     }
 
+    public static boolean hasWorldEdit() {
+        return WORLD_EDIT;
+    }
+
+    public static boolean hasFAWE() {
+        return FAWE;
+    }
+
     public static boolean isPaper() {
         try {
             Class.forName("com.destroystokyo.paper.ParticleBuilder");
@@ -120,7 +130,6 @@ public final class MDLib {
             return false;
         }
     }
-
 
     public static boolean isFolia() {
         String serverName = Bukkit.getServer().getName();

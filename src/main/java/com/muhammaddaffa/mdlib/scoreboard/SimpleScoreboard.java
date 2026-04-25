@@ -2,7 +2,7 @@ package com.muhammaddaffa.mdlib.scoreboard;
 
 import com.muhammaddaffa.mdlib.task.ExecutorManager;
 import com.muhammaddaffa.mdlib.task.handleTask.HandleTask;
-import com.muhammaddaffa.mdlib.utils.Placeholder;
+import com.muhammaddaffa.mdlib.util.Placeholder;
 import fr.mrmicky.fastboard.adventure.FastBoard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;

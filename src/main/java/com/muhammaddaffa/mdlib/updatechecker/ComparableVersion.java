@@ -213,130 +213,121 @@ class ComparableVersion implements Comparable<ComparableVersion> {
         }
     }
 
-    private static class LongItem implements Item {
-        private final long value;
-
-        LongItem(final String str) {
-            this.value = Long.parseLong(str);
-        }
-
-        @Override
-        public int compareTo(final Item item) {
-            if (item == null) {
-                return (this.value != 0L) ? 1 : 0;
+    private record LongItem(long value) implements Item {
+            private LongItem(final String value) {
+                this(Long.parseLong(value));
             }
-            switch (item.getType()) {
-                case 3:
-                case 1:
-                case 2: {
-                    return 1;
+
+            @Override
+            public int compareTo(final Item item) {
+                if (item == null) {
+                    return (this.value != 0L) ? 1 : 0;
                 }
-                case 4: {
-                    final long itemValue = ((LongItem) item).value;
-                    return Long.compare(this.value, itemValue);
-                }
-                case 0: {
-                    return -1;
-                }
-                default: {
-                    throw new IllegalStateException("invalid item: " + item.getClass());
-                }
-            }
-        }
-
-        @Override
-        public int getType() {
-            return 4;
-        }
-
-        @Override
-        public boolean isNull() {
-            return this.value == 0L;
-        }
-
-        @Override
-        public int hashCode() {
-            return (int) (this.value ^ this.value >>> 32);
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            final LongItem longItem = (LongItem) o;
-            return this.value == longItem.value;
-        }
-
-        @Override
-        public String toString() {
-            return Long.toString(this.value);
-        }
-    }
-
-    private static class BigIntegerItem implements Item {
-        private final BigInteger value;
-
-        BigIntegerItem(final String str) {
-            this.value = new BigInteger(str);
-        }
-
-        @Override
-        public int compareTo(final Item item) {
-            if (item == null) {
-                return BigInteger.ZERO.equals(this.value) ? 0 : 1;
-            }
-            switch (item.getType()) {
-                case 3:
-                case 4:
-                case 1:
-                case 2: {
-                    return 1;
-                }
-                case 0: {
-                    return this.value.compareTo(((BigIntegerItem) item).value);
-                }
-                default: {
-                    throw new IllegalStateException("invalid item: " + item.getClass());
+                switch (item.getType()) {
+                    case 3:
+                    case 1:
+                    case 2: {
+                        return 1;
+                    }
+                    case 4: {
+                        final long itemValue = ((LongItem) item).value;
+                        return Long.compare(this.value, itemValue);
+                    }
+                    case 0: {
+                        return -1;
+                    }
+                    default: {
+                        throw new IllegalStateException("invalid item: " + item.getClass());
+                    }
                 }
             }
-        }
 
-        @Override
-        public int getType() {
-            return 0;
-        }
-
-        @Override
-        public boolean isNull() {
-            return BigInteger.ZERO.equals(this.value);
-        }
-
-        @Override
-        public int hashCode() {
-            return this.value.hashCode();
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
+            @Override
+            public int getType() {
+                return 4;
             }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
+
+            @Override
+            public boolean isNull() {
+                return this.value == 0L;
             }
-            final BigIntegerItem that = (BigIntegerItem) o;
-            return this.value.equals(that.value);
+
+            @Override
+            public int hashCode() {
+                return (int) (this.value ^ this.value >>> 32);
+            }
+
+            @Override
+            public boolean equals(final Object o) {
+                if (this == o) {
+                    return true;
+                }
+                if (o == null || this.getClass() != o.getClass()) {
+                    return false;
+                }
+                final LongItem longItem = (LongItem) o;
+                return this.value == longItem.value;
+            }
+
+            @Override
+            public String toString() {
+                return Long.toString(this.value);
+            }
         }
 
+    private record BigIntegerItem(BigInteger value) implements Item {
+            private BigIntegerItem(final String value) {
+                this(new BigInteger(value));
+            }
+
+            @Override
+            public int compareTo(final Item item) {
+                if (item == null) {
+                    return BigInteger.ZERO.equals(this.value) ? 0 : 1;
+                }
+                switch (item.getType()) {
+                    case 3:
+                    case 4:
+                    case 1:
+                    case 2: {
+                        return 1;
+                    }
+                    case 0: {
+                        return this.value.compareTo(((BigIntegerItem) item).value);
+                    }
+                    default: {
+                        throw new IllegalStateException("invalid item: " + item.getClass());
+                    }
+                }
+            }
+
+            @Override
+            public int getType() {
+                return 0;
+            }
+
+            @Override
+            public boolean isNull() {
+                return BigInteger.ZERO.equals(this.value);
+            }
+
         @Override
-        public String toString() {
-            return this.value.toString();
+            public boolean equals(final Object o) {
+                if (this == o) {
+                    return true;
+                }
+                if (o == null || this.getClass() != o.getClass()) {
+                    return false;
+                }
+                final BigIntegerItem that = (BigIntegerItem) o;
+                return this.value.equals(that.value);
+            }
+
+            @Override
+            public String toString() {
+                return this.value.toString();
+            }
         }
-    }
 
     private static class StringItem implements Item {
         private static final List<String> QUALIFIERS;
