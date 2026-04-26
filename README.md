@@ -1,6 +1,6 @@
 # MDLib Extended
 
-[![](https://jitpack.io/v/mdaffa48/MDLib.svg)](https://jitpack.io/#mdaffa48/MDLib)
+[![](https://jitpack.io/#sun-mc-dev/MDLib.svg)](https://jitpack.io/#sun-mc-dev/MDLib)
 
 ```xml
 
@@ -10,7 +10,7 @@
 </repository>
 
 <dependency>
-  <groupId>com.github.mdaffa48</groupId>
+  <groupId>com.github.sun-mc-dev</groupId>
   <artifactId>MDLib</artifactId>
   <version>Tag</version>
 </dependency>
