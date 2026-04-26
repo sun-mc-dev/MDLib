@@ -14,9 +14,9 @@ import java.util.List;
 
 public class BookBuilder {
 
+    private final List<Component> pages = new ArrayList<>();
     private Component title = Component.empty();
     private Component author = Component.empty();
-    private final List<Component> pages = new ArrayList<>();
 
     @Contract(" -> new")
     public static @NotNull BookBuilder create() {

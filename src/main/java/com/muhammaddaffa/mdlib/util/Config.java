@@ -24,10 +24,9 @@ public class Config {
     private final File file;
     private final String configName;
     private final List<String> ignored = new ArrayList<>();
-
+    private final boolean shouldReload;
     // -----------------------------------------------------------
     private FileConfiguration config;
-    private final boolean shouldReload;
     private boolean shouldUpdate;
 
     public Config(String configName, String directory, boolean shouldReload) {

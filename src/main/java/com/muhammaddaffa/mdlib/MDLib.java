@@ -3,8 +3,10 @@ package com.muhammaddaffa.mdlib;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.muhammaddaffa.mdlib.command.CommandRegistry;
 import com.muhammaddaffa.mdlib.hook.VaultEconomy;
+import com.muhammaddaffa.mdlib.papi.GeyserExpansion;
 import com.muhammaddaffa.mdlib.papi.MDLibExpansion;
 import com.muhammaddaffa.mdlib.scoreboard.ScoreboardManager;
+import com.muhammaddaffa.mdlib.util.CombatManager;
 import com.muhammaddaffa.mdlib.util.Logger;
 import com.muhammaddaffa.mdlib.worldguard.listeners.RegionListener;
 import com.muhammaddaffa.mdlib.worldguard.listeners.entity.EntityRegionListener;
@@ -21,8 +23,9 @@ public final class MDLib {
     public static boolean LISTEN_VAULT = true;
     public static boolean LISTEN_WORLDGUARD = false;
     public static boolean CUSTOM_BLOCK_DATA = false;
+    public static boolean COMBAT_TAG = false;
     private static JavaPlugin instance;
-    private static boolean PLACEHOLDER_API, VAULT, WORLD_GUARD, WORLD_EDIT, FAWE;
+    private static boolean PLACEHOLDER_API, VAULT, WORLD_GUARD, WORLD_EDIT, FAWE, GEYSER;
 
     private static CommandRegistry commands;
     private static ScoreboardManager scoreboardManager;
@@ -39,7 +42,9 @@ public final class MDLib {
         WORLD_GUARD = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
         WORLD_EDIT = Bukkit.getPluginManager().getPlugin("WorldEdit") != null;
         FAWE = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit") != null;
+        GEYSER = Bukkit.getPluginManager().getPlugin("Geyser-Spigot") != null;
         registerListeners();
+        registerExpansions();
     }
 
     public static void shutdown() {
@@ -64,9 +69,16 @@ public final class MDLib {
 
         if (VAULT && LISTEN_VAULT) VaultEconomy.init();
         if (CUSTOM_BLOCK_DATA) CustomBlockData.registerListener(instance);
+        if (COMBAT_TAG) new CombatManager(instance);
 
         pm.registerEvents(scoreboardManager, instance);
         FastInvManager.register(instance);
+    }
+
+    private static void registerExpansions() {
+        if (GEYSER && PLACEHOLDER_API) {
+            new GeyserExpansion().register();
+        }
     }
 
     public static void registerExpansion(MDLibExpansion expansion) {
@@ -93,6 +105,10 @@ public final class MDLib {
         CUSTOM_BLOCK_DATA = true;
     }
 
+    public static void registerCombatTag() {
+        COMBAT_TAG = true;
+    }
+
     public static boolean hasPlaceholderAPI() {
         return PLACEHOLDER_API;
     }
@@ -111,6 +127,10 @@ public final class MDLib {
 
     public static boolean hasFAWE() {
         return FAWE;
+    }
+
+    public static boolean hasGeyser() {
+        return GEYSER;
     }
 
     public static boolean isPaper() {

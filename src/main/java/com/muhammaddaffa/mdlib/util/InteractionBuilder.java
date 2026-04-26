@@ -1,7 +1,6 @@
 package com.muhammaddaffa.mdlib.util;
 
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Interaction;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -55,5 +54,4 @@ public class InteractionBuilder {
         }
         return interaction;
     }
-
 }

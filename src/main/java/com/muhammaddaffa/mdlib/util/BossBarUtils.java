@@ -1,10 +1,8 @@
 package com.muhammaddaffa.mdlib.util;
 
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class BossBarUtils {
 
@@ -35,5 +33,4 @@ public class BossBarUtils {
     public static void updateTitle(@NotNull BossBar bossBar, @NotNull String title) {
         bossBar.name(MiniMessageUtils.parse(title));
     }
-
 }

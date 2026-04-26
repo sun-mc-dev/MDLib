@@ -152,7 +152,7 @@ public abstract class RoutedCommand implements SimpleCommandSpec {
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String @NotNull [] raw) {
+    public List<String> tabComplete(CommandSender sender, String alias, String[] raw) {
         if (raw.length == 1) {
             String prefix = raw[0] == null ? "" : raw[0];
             List<String> candidates = new ArrayList<>();
